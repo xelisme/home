@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#EFEDE8">
+<meta name="description" content="REYVIEN — a hub for five projects: portfolio, gallery, network practice, UKK simulation, and CTF. All your projects, one place.">
+<title>REYVIEN — All your projects, one place</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23101010'/%3E%3Ctext x='16' y='23' font-family='Arial, sans-serif' font-size='20' font-weight='900' fill='%23EFEDE8' text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: { fontFamily: { sans: ['Archivo', 'system-ui', 'sans-serif'] } } }
+  };
+</script>
+<style>
+  :root {
+    --bone: #EFEDE8;
+    --ink: #101010;
+    --mid: #6E6C66;
+    --line: rgba(16, 16, 16, .14);
+    --nav: rgba(239, 237, 232, .9);
+  }
+
+  html { scroll-behavior: smooth; scroll-padding-top: 96px; overflow-x: clip; }
+  html.rm { scroll-behavior: auto; }
+
+  body {
+    background: var(--bone);
+    color: var(--ink);
+    font-family: 'Archivo', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+
+  ::selection { background: var(--ink); color: var(--bone); }
+
+  img, video { filter: grayscale(1) contrast(1.06); }
+
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  /* ---------- layout primitives ---------- */
+  .wrap { max-width: 1560px; margin-inline: auto; padding-inline: clamp(20px, 4.5vw, 64px); }
+  .sec { padding-block: clamp(72px, 10vw, 150px); }
+  .sec-tight { padding-block: clamp(56px, 7vw, 110px); }
+
+  .sec-head { display: flex; align-items: center; gap: clamp(14px, 2vw, 24px); }
+  .sec-idx { font-size: 10.5px; letter-spacing: .22em; color: var(--mid); text-transform: uppercase; flex: none; }
+  .sec-title { font-size: clamp(28px, 4.6vw, 60px); font-weight: 800; letter-spacing: -.03em; line-height: 1; flex: none; }
+  .sec-line { flex: 1; height: 1px; background: var(--line); }
+  .sec-note { font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--mid); text-align: right; }
+  @media (max-width: 899.98px) { .sec-note { display: none; } }
+
+  .btn-line {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-size: 11px; letter-spacing: .22em; text-transform: uppercase; font-weight: 600;
+    padding-bottom: 8px; border-bottom: 1px solid var(--ink);
+  }
+  .btn-line svg { transition: transform .35s cubic-bezier(.19, 1, .22, 1); }
+  @media (hover: hover) { .btn-line:hover svg { transform: translateX(6px); } }
+
+  /* ---------- reveal system ---------- */
+  .rv {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity .9s cubic-bezier(.19, 1, .22, 1), transform .9s cubic-bezier(.19, 1, .22, 1);
+    will-change: opacity, transform;
+  }
+  .rv.in { opacity: 1; transform: translateY(0); }
+
+  /* ---------- announcement ---------- */
+  .announce {
+    height: 40px; display: flex; align-items: center; justify-content: center;
+    border-bottom: 1px solid var(--line); overflow: hidden;
+    background: var(--bone); position: relative; z-index: 59;
+  }
+  .announce p { font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--mid); white-space: nowrap; }
+
+  /* ---------- nav ---------- */
+  .nav {
+    position: sticky; top: 0; height: 96px; z-index: 60;
+    background: var(--nav);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: space-between;
+    padding-inline: clamp(20px, 4vw, 56px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-logo { font-weight: 900; font-size: 1.4rem; letter-spacing: -.02em; text-transform: uppercase; }
+  .nav-links { display: flex; gap: clamp(18px, 2.4vw, 40px); position: absolute; left: 50%; transform: translateX(-50%); }
+  .nav-links a { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--mid); transition: color .3s ease; }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-bag { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink); }
+  @media (max-width: 899.98px) { .nav-links, .nav-bag { display: none; } }
+  #prog {
+    position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+    background: var(--ink); transform: scaleX(0); transform-origin: left; z-index: 61;
+  }
+
+  /* ---------- hero ---------- */
+  #hero { position: relative; min-height: calc(100svh - 136px); overflow: hidden; }
+  .hero-stage { position: absolute; inset: 0; opacity: var(--hf, 1); }
+  .hero-word-wrap {
+    position: absolute; inset: 0; z-index: 1;
+    display: flex; align-items: center; justify-content: center; pointer-events: none;
+  }
+  .wordmark {
+    font-size: clamp(64px, 16.5vw, 230px);
+    font-weight: 900; line-height: .8; letter-spacing: -.045em; text-transform: uppercase;
+    color: var(--ink); will-change: transform;
+  }
+  .hero-model-wrap {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; align-items: center; justify-content: center; pointer-events: none;
+    will-change: transform;
+  }
+  .hero-model { height: min(86svh, 800px); width: auto; }
+  .hero-corner {
+    position: absolute; z-index: 4;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink);
+  }
+  .hero-corner::before { content: ''; width: 6px; height: 6px; background: var(--ink); flex: none; }
+  .hero-corner .hc-idx { color: var(--mid); }
+  .hero-corner.tl { top: clamp(16px, 3vw, 40px); left: clamp(16px, 4vw, 56px); }
+  .hero-corner.br { bottom: clamp(16px, 3vw, 40px); right: clamp(16px, 4vw, 56px); }
+  .hero-vert {
+    position: absolute; z-index: 4;
+    font-size: 10px; letter-spacing: .3em; text-transform: uppercase; color: var(--mid);
+    writing-mode: vertical-rl;
+  }
+  .hero-vert.vl { left: 14px; top: 50%; transform: translateY(-50%) rotate(180deg); }
+  .hero-vert.vr { right: 14px; top: 50%; transform: translateY(-50%); }
+  @media (max-width: 899.98px) { .hero-vert { display: none; } }
+
+  .hero-el { opacity: 0; transition: opacity 1.1s cubic-bezier(.19, 1, .22, 1), transform 1.1s cubic-bezier(.19, 1, .22, 1); }
+  .hero-el.in { opacity: 1; }
+  .hero-model.hero-el { transform: translateY(34px); }
+  .hero-model.hero-el.in { transform: translateY(0); }
+  .hero-corner.hero-el { transform: translateY(16px); }
+  .hero-corner.hero-el.in { transform: translateY(0); }
+
+  /* ---------- cats ---------- */
+  .cats-grid { display: grid; grid-template-columns: 1fr; gap: clamp(20px, 2.5vw, 40px); margin-top: clamp(32px, 5vw, 64px); }
+  @media (min-width: 900px) { .cats-grid { grid-template-columns: repeat(3, 1fr); } }
+  .cat-media { overflow: hidden; aspect-ratio: 3 / 4; background: #E2DFD8; }
+  .cat-media img { width: 100%; height: 100%; object-fit: cover; will-change: transform; }
+  @media (hover: hover) {
+    .cat-media img { transition: transform 1s cubic-bezier(.19, 1, .22, 1); }
+    .cat-card:hover .cat-media img { transform: scale(1.09); }
+    .cat-arrow { transition: transform .4s cubic-bezier(.19, 1, .22, 1); }
+    .cat-card:hover .cat-arrow { transform: translateX(6px); }
+  }
+  .cat-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; }
+  .cat-name { font-weight: 600; font-size: 1.15rem; letter-spacing: -.01em; }
+  .cat-sub { margin-top: 6px; font-size: 13px; color: var(--mid); line-height: 1.55; }
+
+  /* ---------- season ---------- */
+  .season-grid { display: grid; grid-template-columns: 1fr; margin-top: clamp(32px, 5vw, 64px); }
+  @media (min-width: 900px) { .season-grid { grid-template-columns: 1fr 1.2fr; } }
+  .season-copy {
+    display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+    padding: clamp(24px, 4vw, 64px) clamp(20px, 5vw, 64px) clamp(48px, 6vw, 96px);
+  }
+  .season-title { font-size: clamp(28px, 4vw, 52px); font-weight: 700; letter-spacing: -.02em; line-height: 1.05; max-width: 14ch; }
+  .season-copy p { margin-top: 24px; color: var(--mid); font-size: 15px; line-height: 1.7; max-width: 46ch; }
+  .season-copy .btn-line { margin-top: 36px; }
+  .season-media { position: relative; overflow: hidden; min-height: 420px; }
+  .season-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; will-change: transform; }
+
+  /* ---------- svc ---------- */
+  #svc { border-top: 1px solid var(--line); }
+  .svc-grid { display: grid; grid-template-columns: 1fr; gap: clamp(28px, 3vw, 48px); }
+  @media (min-width: 900px) { .svc-grid { grid-template-columns: repeat(3, 1fr); } }
+  .svc-item { border-top: 1px solid var(--ink); padding-top: 20px; position: relative; }
+  .svc-item svg { width: 26px; height: 26px; }
+  .svc-item h3 { margin-top: 18px; font-weight: 700; font-size: 1.05rem; letter-spacing: -.01em; }
+  .svc-item p { margin-top: 8px; color: var(--mid); font-size: 13.5px; line-height: 1.6; max-width: 30ch; }
+  .svc-idx { position: absolute; top: 20px; right: 0; font-size: 10.5px; letter-spacing: .2em; color: var(--mid); }
+
+  /* ---------- shop ---------- */
+  .shop-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: clamp(14px, 1.6vw, 28px); row-gap: clamp(36px, 4vw, 56px);
+    margin-top: clamp(32px, 5vw, 64px);
+  }
+  @media (min-width: 900px) { .shop-grid { grid-template-columns: repeat(4, 1fr); } }
+  .shop-card { position: relative; }
+  .shop-media { position: relative; overflow: hidden; aspect-ratio: 3 / 4; background: #E2DFD8; }
+  .shop-media img { width: 100%; height: 100%; object-fit: cover; }
+  .card-link { position: absolute; inset: 0; z-index: 2; }
+  .add-btn {
+    position: absolute; bottom: 10px; left: 10px; right: 10px; z-index: 3;
+    min-width: 140px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px 16px;
+    background: var(--bone); border: 1px solid var(--ink);
+    font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink);
+    cursor: pointer;
+  }
+  .fav-btn {
+    position: absolute; top: 10px; right: 10px; z-index: 3;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bone); border: 1px solid var(--ink); cursor: pointer;
+  }
+  .fav-btn svg { width: 17px; height: 17px; }
+  .fav-btn.is-fav svg { fill: var(--ink); }
+  @media (hover: hover) {
+    .add-btn, .fav-btn {
+      opacity: 0; transform: translateY(12px);
+      transition: opacity .35s ease, transform .35s ease, background .35s ease, color .35s ease;
+    }
+    .shop-card:hover .add-btn, .shop-card:hover .fav-btn,
+    .add-btn:focus-visible, .fav-btn:focus-visible { opacity: 1; transform: translateY(0); }
+  }
+  .add-btn.is-added { background: var(--ink); color: var(--bone); }
+  .shop-meta { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 14px; }
+  .shop-meta h3 { font-size: 14px; font-weight: 600; letter-spacing: -.01em; }
+  .shop-meta p { margin-top: 3px; font-size: 12px; color: var(--mid); }
+  .shop-price { font-size: 13px; flex: none; }
+  .shop-soon .shop-media::after {
+    content: 'SOON'; position: absolute; top: 12px; left: 12px; z-index: 2;
+    font-size: 10px; letter-spacing: .22em; padding: 6px 10px;
+    border: 1px solid var(--ink); background: var(--bone);
+  }
+
+  /* ---------- look ---------- */
+  .look-grid { display: grid; grid-template-columns: 1fr; gap: clamp(20px, 2.5vw, 40px); margin-top: clamp(32px, 5vw, 64px); }
+  @media (min-width: 900px) {
+    .look-grid { grid-template-columns: repeat(12, 1fr); }
+    .lg-a { grid-column: 1 / 6; align-self: end; padding-bottom: 12%; }
+    .lg-b { grid-column: 6 / 13; z-index: 1; }
+    .lg-c { grid-column: 3 / 8; margin-top: -22%; z-index: 2; }
+  }
+  .lg-a .lg-kicker { font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--mid); }
+  .lg-a h3 { margin-top: 18px; font-size: clamp(26px, 3.4vw, 44px); font-weight: 700; letter-spacing: -.02em; line-height: 1.08; max-width: 16ch; }
+  .lg-a p { margin-top: 20px; color: var(--mid); font-size: 15px; line-height: 1.7; max-width: 40ch; }
+  .lg-a .btn-line { margin-top: 32px; }
+  [data-scrub] { position: relative; overflow: hidden; }
+  [data-scrub] .scrub { position: absolute; inset: 0; clip-path: inset(calc((1 - var(--p, 1)) * 45%) 0 0 0); }
+  [data-scrub] img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    transform: scale(calc(1.18 - var(--p, 1) * 0.18)); will-change: transform;
+  }
+  .lg-b { aspect-ratio: 4 / 5; }
+  .lg-c { aspect-ratio: 3 / 4; }
+
+  /* ---------- cloth ---------- */
+  .cloth-grid { display: grid; grid-template-columns: 1fr; gap: clamp(28px, 4vw, 72px); margin-top: clamp(32px, 5vw, 64px); }
+  @media (min-width: 900px) { .cloth-grid { grid-template-columns: 1fr 1.15fr; align-items: center; } }
+  .cloth-copy h3 { font-size: clamp(28px, 3.6vw, 48px); font-weight: 700; letter-spacing: -.02em; line-height: 1.05; max-width: 18ch; }
+  .cloth-copy > p { margin-top: 24px; color: var(--mid); font-size: 15px; line-height: 1.7; max-width: 44ch; }
+  .cloth-copy dl { margin-top: 40px; }
+  .dl-row { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .dl-row dt { font-weight: 600; font-size: 14px; }
+  .dl-row dd { color: var(--mid); font-size: 13.5px; text-align: right; }
+  .cloth-media video { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: #E2DFD8; }
+
+  /* ---------- atelier ---------- */
+  .atelier-grid { display: grid; grid-template-columns: 1fr; gap: clamp(28px, 4vw, 72px); margin-top: clamp(32px, 5vw, 64px); }
+  @media (min-width: 900px) { .atelier-grid { grid-template-columns: 1.1fr 1fr; align-items: center; } }
+  .atelier-media img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+  .atelier-copy h3 { font-size: clamp(28px, 3.6vw, 48px); font-weight: 700; letter-spacing: -.02em; line-height: 1.05; max-width: 16ch; }
+  .atelier-copy > p { margin-top: 24px; color: var(--mid); font-size: 15px; line-height: 1.7; max-width: 44ch; }
+  .stats { display: flex; gap: clamp(32px, 5vw, 72px); margin-top: 48px; border-top: 1px solid var(--ink); padding-top: 32px; }
+  .stat-num { font-size: clamp(44px, 6vw, 76px); font-weight: 900; letter-spacing: -.03em; line-height: 1; }
+  .stat p { margin-top: 10px; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--mid); }
+
+  /* ---------- signup ---------- */
+  #signup { border-top: 1px solid var(--line); text-align: center; }
+  .signup-inner { max-width: 720px; margin-inline: auto; }
+  .signup-inner h2 { font-size: clamp(32px, 5vw, 64px); font-weight: 800; letter-spacing: -.03em; }
+  .signup-inner > p { margin-top: 18px; color: var(--mid); font-size: 15px; }
+  .signup-form { margin: 40px auto 0; max-width: 460px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--ink); padding-bottom: 12px; }
+  .signup-form input { flex: 1; min-width: 0; background: transparent; border: 0; outline: none; font-size: 15px; color: var(--ink); padding: 4px 0; }
+  .signup-form input::placeholder { color: var(--mid); }
+  .signup-form button { display: inline-flex; align-items: center; gap: 10px; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; font-weight: 600; cursor: pointer; }
+  .signup-form button svg { transition: transform .35s cubic-bezier(.19, 1, .22, 1); }
+  @media (hover: hover) { .signup-form button:hover svg { transform: translateX(6px); } }
+  .signup-err { margin-top: 14px; font-size: 12px; color: var(--ink); letter-spacing: .06em; }
+  .signup-msg { margin-top: 40px; font-size: 15px; }
+
+  /* ---------- footer ---------- */
+  .footer { border-top: 1px solid var(--ink); overflow: hidden; }
+  .footer-grid { display: grid; grid-template-columns: 1fr; gap: 40px; padding-block: clamp(48px, 6vw, 88px) 24px; }
+  @media (min-width: 900px) { .footer-grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; } }
+  .f-brand h2 { font-size: clamp(28px, 3vw, 40px); font-weight: 900; letter-spacing: -.03em; }
+  .f-brand p { margin-top: 18px; color: var(--mid); font-size: 13px; line-height: 1.8; }
+  .f-col h4 { font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--mid); margin-bottom: 18px; }
+  .f-col a { display: block; font-size: 14px; padding: 5px 0; color: var(--ink); }
+  .f-col a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .f-bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-block: 24px; border-top: 1px solid var(--line); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--mid); }
+  .f-watermark {
+    font-size: clamp(80px, 18vw, 300px); font-weight: 900; letter-spacing: -.04em; line-height: .75;
+    color: var(--ink); opacity: .05; pointer-events: none; user-select: none;
+    text-align: right; margin-top: clamp(24px, 4vw, 56px);
+  }
+  @media (max-width: 899.98px) { .f-watermark { font-size: 22vw; } }
+
+  /* ---------- reduced motion ---------- */
+  .rm, .rm * { animation: none !important; transition: none !important; }
+  .rm .rv, .rm .hero-el { opacity: 1 !important; transform: none !important; }
+  @media (prefers-reduced-motion: reduce) {
+    .rv, .hero-el { opacity: 1 !important; transform: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <header class="nav">
+    <a href="#hero" class="nav-logo">REYVIEN</a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#cats">Projects</a>
+      <a href="#more">More</a>
+    </nav>
+    <div id="prog" aria-hidden="true"></div>
+  </header>
+
+  <main>
+
+    <!-- Hero -->
+    <section id="hero">
+      <div class="hero-stage">
+        <div class="hero-word-wrap"><h1 class="wordmark hero-el">REYVIEN</h1></div>
+        <div class="hero-model-wrap">
+          <img class="hero-model hero-el" src="https://5bs2dn58qc.ucarecd.net/7309548e-5a68-4466-838c-f9a9f0e010ef/Untitleddesign1.png" alt="Editorial model standing in front of the REYVIEN wordmark" width="555" height="1041" fetchpriority="high">
+        </div>
+        <h2 class="hero-corner tl hero-el"><span class="hc-idx">01</span>All your projects, one place</h2>
+        <h3 class="hero-corner br hero-el">reyvien · xelisme<span class="hc-idx">&nbsp;02</span></h3>
+        <div class="hero-vert vl" aria-hidden="true">Portfolio — Gallery — Network — Security</div>
+        <div class="hero-vert vr" aria-hidden="true">Scroll</div>
+      </div>
+    </section>
+
+    <!-- 01 / Projects -->
+    <section id="cats" class="sec">
+      <div class="wrap">
+        <div class="sec-head rv">
+          <span class="sec-idx">01</span>
+          <h2 class="sec-title">Projects</h2>
+          <span class="sec-line"></span>
+          <span class="sec-note">Three main projects, two more below</span>
+        </div>
+        <div class="cats-grid">
+          <a class="cat-card rv" href="https://reyvien.me" target="_blank" rel="noopener">
+            <div class="cat-media"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20300%20400%22%3E%0A%3Crect%20width%3D%22300%22%20height%3D%22400%22%20fill%3D%22%23EFEDE8%22%2F%3E%0A%3Cline%20x1%3D%2240%22%20y1%3D%22110%22%20x2%3D%22260%22%20y2%3D%22110%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Cline%20x1%3D%2240%22%20y1%3D%22320%22%20x2%3D%22260%22%20y2%3D%22320%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Ctext%20x%3D%22150%22%20y%3D%22270%22%20font-family%3D%22Arial%2CHelvetica%2Csans-serif%22%20font-size%3D%22220%22%20font-weight%3D%22900%22%20fill%3D%22%23101010%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%22-0.04em%22%3ER%3C%2Ftext%3E%0A%3Crect%20x%3D%2240%22%20y%3D%22128%22%20width%3D%2224%22%20height%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3Crect%20x%3D%2272%22%20y%3D%22128%22%20width%3D%2210%22%20height%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3Crect%20x%3D%2290%22%20y%3D%22128%22%20width%3D%224%22%20height%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3Crect%20x%3D%22218%22%20y%3D%22336%22%20width%3D%2224%22%20height%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3Crect%20x%3D%22250%22%20y%3D%22336%22%20width%3D%222%22%20height%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3C%2Fsvg%3E" alt="Portfolio project" loading="lazy" decoding="async"></div>
+            <div class="cat-meta">
+              <h3 class="cat-name">Portfolio</h3>
+              <svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18" aria-hidden="true"><path d="M4 12h16M13 5l7 7-7 7"/></svg>
+            </div>
+            <p class="cat-sub">reyvien.me — personal portfolio, work, writing, and the things I build.</p>
+          </a>
+          <a class="cat-card rv" href="https://gallery.reyvien.me" target="_blank" rel="noopener">
+            <div class="cat-media"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20300%20400%22%3E%0A%3Crect%20width%3D%22300%22%20height%3D%22400%22%20fill%3D%22%23EFEDE8%22%2F%3E%0A%3Crect%20x%3D%2240%22%20y%3D%2260%22%20width%3D%22170%22%20height%3D%22210%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Crect%20x%3D%2252%22%20y%3D%2272%22%20width%3D%22146%22%20height%3D%22186%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%220.8%22%2F%3E%0A%3Cline%20x1%3D%2266%22%20y1%3D%22130%22%20x2%3D%22176%22%20y2%3D%22130%22%20stroke%3D%22%236E6C66%22%20stroke-width%3D%220.8%22%2F%3E%0A%3Cline%20x1%3D%2266%22%20y1%3D%22148%22%20x2%3D%22156%22%20y2%3D%22148%22%20stroke%3D%22%236E6C66%22%20stroke-width%3D%220.8%22%2F%3E%0A%3Crect%20x%3D%2266%22%20y%3D%22168%22%20width%3D%2260%22%20height%3D%2260%22%20fill%3D%22none%22%20stroke%3D%22%236E6C66%22%20stroke-width%3D%220.6%22%2F%3E%0A%3Crect%20x%3D%22140%22%20y%3D%22120%22%20width%3D%22130%22%20height%3D%22170%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Crect%20x%3D%22152%22%20y%3D%22132%22%20width%3D%22106%22%20height%3D%22146%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%220.8%22%2F%3E%0A%3Cline%20x1%3D%22166%22%20y1%3D%22190%22%20x2%3D%22246%22%20y2%3D%22190%22%20stroke%3D%22%236E6C66%22%20stroke-width%3D%220.8%22%2F%3E%0A%3Cline%20x1%3D%22166%22%20y1%3D%22208%22%20x2%3D%22226%22%20y2%3D%22208%22%20stroke%3D%22%236E6C66%22%20stroke-width%3D%220.8%22%2F%3E%0A%3Ccircle%20cx%3D%22206%22%20cy%3D%22234%22%20r%3D%2210%22%20fill%3D%22none%22%20stroke%3D%22%236E6C66%22%20stroke-width%3D%220.8%22%2F%3E%0A%3Crect%20x%3D%2240%22%20y%3D%22300%22%20width%3D%22100%22%20height%3D%2268%22%20fill%3D%22none%22%20stroke%3D%22%236E6C66%22%20stroke-width%3D%221%22%2F%3E%0A%3Crect%20x%3D%2248%22%20y%3D%22308%22%20width%3D%2284%22%20height%3D%2252%22%20fill%3D%22none%22%20stroke%3D%22%236E6C66%22%20stroke-width%3D%220.5%22%2F%3E%0A%3Cline%20x1%3D%2256%22%20y1%3D%22326%22%20x2%3D%22124%22%20y2%3D%22326%22%20stroke%3D%22%236E6C66%22%20stroke-width%3D%220.5%22%2F%3E%0A%3Cline%20x1%3D%2256%22%20y1%3D%22338%22%20x2%3D%22100%22%20y2%3D%22338%22%20stroke%3D%22%236E6C66%22%20stroke-width%3D%220.5%22%2F%3E%0A%3Ccircle%20cx%3D%22230%22%20cy%3D%22320%22%20r%3D%2218%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Ccircle%20cx%3D%22230%22%20cy%3D%22320%22%20r%3D%2211%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%220.8%22%2F%3E%0A%3Cline%20x1%3D%22230%22%20y1%3D%22338%22%20x2%3D%22223%22%20y2%3D%22360%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Cline%20x1%3D%22230%22%20y1%3D%22338%22%20x2%3D%22237%22%20y2%3D%22360%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3C%2Fsvg%3E" alt="Gallery project" loading="lazy" decoding="async"></div>
+            <div class="cat-meta">
+              <h3 class="cat-name">Gallery</h3>
+              <svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18" aria-hidden="true"><path d="M4 12h16M13 5l7 7-7 7"/></svg>
+            </div>
+            <p class="cat-sub">gallery.reyvien.me — certificates, competition results, and past work.</p>
+          </a>
+          <a class="cat-card rv" href="https://ctf.reyvien.me" target="_blank" rel="noopener">
+            <div class="cat-media"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20300%20400%22%3E%0A%3Crect%20width%3D%22300%22%20height%3D%22400%22%20fill%3D%22%23EFEDE8%22%2F%3E%0A%3Crect%20x%3D%2230%22%20y%3D%2250%22%20width%3D%22240%22%20height%3D%22200%22%20rx%3D%224%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Cline%20x1%3D%2230%22%20y1%3D%2280%22%20x2%3D%22270%22%20y2%3D%2280%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221%22%2F%3E%0A%3Ccircle%20cx%3D%2248%22%20cy%3D%2265%22%20r%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3Ccircle%20cx%3D%2262%22%20cy%3D%2265%22%20r%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3Ccircle%20cx%3D%2276%22%20cy%3D%2265%22%20r%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3Crect%20x%3D%2246%22%20y%3D%2296%22%20width%3D%22130%22%20height%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3Crect%20x%3D%2246%22%20y%3D%22110%22%20width%3D%22170%22%20height%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3Crect%20x%3D%2246%22%20y%3D%22124%22%20width%3D%22100%22%20height%3D%223%22%20fill%3D%22%23101010%22%2F%3E%0A%3Crect%20x%3D%22150%22%20y%3D%22122%22%20width%3D%228%22%20height%3D%2212%22%20fill%3D%22%23101010%22%2F%3E%0A%3Crect%20x%3D%2246%22%20y%3D%22146%22%20width%3D%22140%22%20height%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3Cline%20x1%3D%2246%22%20y1%3D%22168%22%20x2%3D%22160%22%20y2%3D%22168%22%20stroke%3D%22%236E6C66%22%20stroke-width%3D%220.6%22%20stroke-dasharray%3D%223%2C3%22%2F%3E%0A%3Cline%20x1%3D%22180%22%20y1%3D%22168%22%20x2%3D%22254%22%20y2%3D%22168%22%20stroke%3D%22%236E6C66%22%20stroke-width%3D%220.6%22%20stroke-dasharray%3D%223%2C3%22%2F%3E%0A%3Cline%20x1%3D%22170%22%20y1%3D%22210%22%20x2%3D%22170%22%20y2%3D%22270%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Cpath%20d%3D%22M170%2C212%20L215%2C222%20L170%2C234Z%22%20fill%3D%22%23101010%22%2F%3E%0A%3Crect%20x%3D%22130%22%20y%3D%22290%22%20width%3D%2240%22%20height%3D%2234%22%20rx%3D%223%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Cpath%20d%3D%22M142%2C290%20L142%2C278%20C142%2C268%20158%2C268%20158%2C278%20L158%2C290%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22306%22%20r%3D%223%22%20fill%3D%22%23101010%22%2F%3E%0A%3C%2Fsvg%3E" alt="CTF project" loading="lazy" decoding="async"></div>
+            <div class="cat-meta">
+              <h3 class="cat-name">BELMOTI CTF</h3>
+              <svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18" aria-hidden="true"><path d="M4 12h16M13 5l7 7-7 7"/></svg>
+            </div>
+            <p class="cat-sub">ctf.reyvien.me — CTF arena built from LKS questions.</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 / More projects -->
+    <section id="more" class="sec">
+      <div class="wrap">
+        <div class="sec-head rv">
+          <span class="sec-idx">02</span>
+          <h2 class="sec-title">More projects</h2>
+          <span class="sec-line"></span>
+        </div>
+        <div class="shop-grid">
+
+          <div class="shop-card rv">
+            <div class="shop-media">
+              <img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20300%20400%22%3E%0A%3Crect%20width%3D%22300%22%20height%3D%22400%22%20fill%3D%22%23EFEDE8%22%2F%3E%0A%3Crect%20x%3D%22115%22%20y%3D%22155%22%20width%3D%2270%22%20height%3D%2245%22%20rx%3D%224%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Ccircle%20cx%3D%22130%22%20cy%3D%22185%22%20r%3D%223%22%20fill%3D%22%23101010%22%2F%3E%0A%3Ccircle%20cx%3D%22150%22%20cy%3D%22185%22%20r%3D%223%22%20fill%3D%22%23101010%22%2F%3E%0A%3Ccircle%20cx%3D%22170%22%20cy%3D%22185%22%20r%3D%223%22%20fill%3D%22%23101010%22%2F%3E%0A%3Ctext%20x%3D%22150%22%20y%3D%22174%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2210%22%20font-weight%3D%22700%22%20fill%3D%22%236E6C66%22%20text-anchor%3D%22middle%22%3ERB%3C%2Ftext%3E%0A%3Cline%20x1%3D%22130%22%20y1%3D%22155%22%20x2%3D%2280%22%20y2%3D%22100%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Cline%20x1%3D%22170%22%20y1%3D%22155%22%20x2%3D%22220%22%20y2%3D%22100%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Cline%20x1%3D%22115%22%20y1%3D%22177%22%20x2%3D%2260%22%20y2%3D%22230%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Cline%20x1%3D%22185%22%20y1%3D%22177%22%20x2%3D%22240%22%20y2%3D%22230%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Cline%20x1%3D%22150%22%20y1%3D%22200%22%20x2%3D%22150%22%20y2%3D%22290%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Ccircle%20cx%3D%2280%22%20cy%3D%2286%22%20r%3D%2216%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Ctext%20x%3D%2280%22%20y%3D%2290%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%228%22%20fill%3D%22%236E6C66%22%20text-anchor%3D%22middle%22%3EPC%3C%2Ftext%3E%0A%3Ccircle%20cx%3D%22220%22%20cy%3D%2286%22%20r%3D%2216%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Ctext%20x%3D%22220%22%20y%3D%2290%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%228%22%20fill%3D%22%236E6C66%22%20text-anchor%3D%22middle%22%3EAP%3C%2Ftext%3E%0A%3Ccircle%20cx%3D%2260%22%20cy%3D%22244%22%20r%3D%2216%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Ctext%20x%3D%2260%22%20y%3D%22248%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%228%22%20fill%3D%22%236E6C66%22%20text-anchor%3D%22middle%22%3ESW%3C%2Ftext%3E%0A%3Ccircle%20cx%3D%22240%22%20cy%3D%22244%22%20r%3D%2216%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Ctext%20x%3D%22240%22%20y%3D%22248%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%228%22%20fill%3D%22%236E6C66%22%20text-anchor%3D%22middle%22%3ESRV%3C%2Ftext%3E%0A%3Crect%20x%3D%22125%22%20y%3D%22280%22%20width%3D%2250%22%20height%3D%2235%22%20rx%3D%223%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Ctext%20x%3D%22150%22%20y%3D%22301%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%229%22%20fill%3D%22%236E6C66%22%20text-anchor%3D%22middle%22%3EWAN%3C%2Ftext%3E%0A%3Ctext%20x%3D%22150%22%20y%3D%22360%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%229%22%20fill%3D%22%236E6C66%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.15em%22%3ETOPOLOGY%3C%2Ftext%3E%0A%3C%2Fsvg%3E" alt="MikroTik practice project" loading="lazy" decoding="async">
+              <a class="card-link" href="https://mikrotik-praktik.reyvien.me" target="_blank" rel="noopener" aria-label="Open MikroTik practice"></a>
+            </div>
+            <div class="shop-meta">
+              <div>
+                <h3>MikroTik practice</h3>
+                <p>Network practice</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="shop-card rv">
+            <div class="shop-media">
+              <img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20300%20400%22%3E%0A%3Crect%20width%3D%22300%22%20height%3D%22400%22%20fill%3D%22%23EFEDE8%22%2F%3E%0A%3Crect%20x%3D%2240%22%20y%3D%2240%22%20width%3D%22220%22%20height%3D%22170%22%20rx%3D%224%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Crect%20x%3D%2252%22%20y%3D%2252%22%20width%3D%22196%22%20height%3D%22140%22%20fill%3D%22none%22%20stroke%3D%22%236E6C66%22%20stroke-width%3D%220.8%22%2F%3E%0A%3Cline%20x1%3D%22150%22%20y1%3D%22210%22%20x2%3D%22150%22%20y2%3D%22255%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Cline%20x1%3D%22115%22%20y1%3D%22255%22%20x2%3D%22185%22%20y2%3D%22255%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.6%22%2F%3E%0A%3Crect%20x%3D%2268%22%20y%3D%2268%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221%22%2F%3E%0A%3Cpath%20d%3D%22M70%2C74%20L74%2C78%20L78%2C70%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.2%22%2F%3E%0A%3Crect%20x%3D%2286%22%20y%3D%2271%22%20width%3D%2280%22%20height%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3Crect%20x%3D%2268%22%20y%3D%2290%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221%22%2F%3E%0A%3Cpath%20d%3D%22M70%2C96%20L74%2C100%20L78%2C92%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221.2%22%2F%3E%0A%3Crect%20x%3D%2286%22%20y%3D%2293%22%20width%3D%22100%22%20height%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3Crect%20x%3D%2268%22%20y%3D%22112%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221%22%2F%3E%0A%3Crect%20x%3D%2286%22%20y%3D%22115%22%20width%3D%2260%22%20height%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3Crect%20x%3D%2268%22%20y%3D%22134%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221%22%2F%3E%0A%3Crect%20x%3D%2286%22%20y%3D%22137%22%20width%3D%2288%22%20height%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3Crect%20x%3D%2268%22%20y%3D%22156%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23101010%22%20stroke-width%3D%221%22%2F%3E%0A%3Crect%20x%3D%2286%22%20y%3D%22159%22%20width%3D%2272%22%20height%3D%223%22%20fill%3D%22%236E6C66%22%2F%3E%0A%3Crect%20x%3D%2268%22%20y%3D%22174%22%20width%3D%22164%22%20height%3D%224%22%20fill%3D%22none%22%20stroke%3D%22%236E6C66%22%20stroke-width%3D%220.8%22%2F%3E%0A%3Crect%20x%3D%2268%22%20y%3D%22174%22%20width%3D%2296%22%20height%3D%224%22%20fill%3D%22%23101010%22%2F%3E%0A%3Ctext%20x%3D%22150%22%20y%3D%22315%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2232%22%20font-weight%3D%22900%22%20fill%3D%22%23101010%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%22-0.03em%22%3E2026%3C%2Ftext%3E%0A%3Ctext%20x%3D%22150%22%20y%3D%22342%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2210%22%20fill%3D%22%236E6C66%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.2em%22%3EUKK%20TKJ%3C%2Ftext%3E%0A%3C%2Fsvg%3E" alt="SIMUKA project" loading="lazy" decoding="async">
+              <a class="card-link" href="https://simuka.reyvien.me" target="_blank" rel="noopener" aria-label="Open SIMUKA"></a>
+            </div>
+            <div class="shop-meta">
+              <div>
+                <h3>SIMUKA</h3>
+                <p>UKK TKJ 2026 simulation</p>
+              </div>
+            </div>
+          </div>
+
+</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="f-brand">
+          <h2>REYVIEN</h2>
+          <p>REYVIEN — aka xelisme</p>
+        </div>
+        <nav class="f-col" aria-label="Projects">
+          <h4>Projects</h4>
+          <a href="https://reyvien.me" target="_blank" rel="noopener">Portfolio</a>
+          <a href="https://gallery.reyvien.me" target="_blank" rel="noopener">Gallery</a>
+          <a href="https://ctf.reyvien.me" target="_blank" rel="noopener">BELMOTI CTF</a>
+          <a href="https://mikrotik-praktik.reyvien.me" target="_blank" rel="noopener">MikroTik practice</a>
+          <a href="https://simuka.reyvien.me" target="_blank" rel="noopener">SIMUKA</a>
+        </nav>
+        <nav class="f-col" aria-label="Index">
+          <h4>Index</h4>
+          <a href="#cats">Projects</a>
+          <a href="#more">More</a>
+        </nav>
+        <nav class="f-col" aria-label="Elsewhere">
+          <h4>Elsewhere</h4>
+          <a href="https://github.com/xelisme" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://instagram.com/xelisme" target="_blank" rel="noopener">Instagram</a>
+          <a href="mailto:xelisme1@gmail.com">Email</a>
+        </nav>
+      </div>
+      <div class="f-watermark" aria-hidden="true">REYVIEN</div>
+      <div class="f-bottom">
+        <span>© 2026 REYVIEN - aka xelisme</span>
+        <a href="#hero">Back to top ↑</a>
+      </div>
+    </div>
+  </footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (RM) document.documentElement.classList.add('rm');
+
+  function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+  function $(s, c) { return (c || document).querySelector(s); }
+  function $$(s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); }
+
+  /* ---- reveal stagger (70ms) ---- */
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      var el = en.target;
+      var sibs = $$('.rv', el.parentElement);
+      var i = sibs.indexOf(el);
+      el.style.transitionDelay = RM ? '0ms' : (Math.min(i, 6) * 70) + 'ms';
+      el.classList.add('in');
+      io.unobserve(el);
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -6% 0px' });
+  $$('.rv').forEach(function (el) { io.observe(el); });
+
+  /* ---- hero intro: h1 -> model -> h2 -> h3, 140ms apart ---- */
+  $$('.hero-el').forEach(function (el, i) {
+    if (RM) { el.classList.add('in'); return; }
+    el.style.transitionDelay = (i * 140) + 'ms';
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { el.classList.add('in'); });
+    });
+  });
+
+  /* ---- cloth video: lazy load on visibility ---- */
+  var video = $('#clothVideo');
+  if (video) {
+    var vio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        video.src = 'https://cdn.jsdelivr.net/gh/VanhDc/aura-assets@sable-v2/sable/img/cloth.mp4';
+        video.load();
+        var p = video.play();
+        if (p && p.catch) p.catch(function () {});
+        vio.unobserve(video);
+      });
+    }, { rootMargin: '240px 0px' });
+    vio.observe(video);
+  }
+
+  /* ---- atelier count-up, cubic-bezier(0.19, 1, 0.22, 1) ---- */
+  function bezC(t, a, b) { var u = 1 - t; return 3 * u * u * t * a + 3 * u * t * t * b + t * t * t; }
+  function easeOutQuintish(t) {
+    var x1 = 0.19, y1 = 1, x2 = 0.22, y2 = 1;
+    var lo = 0, hi = 1, m, i;
+    for (i = 0; i < 16; i++) {
+      m = (lo + hi) / 2;
+      if (bezC(m, x1, x2) < t) lo = m; else hi = m;
+    }
+    return bezC((lo + hi) / 2, y1, y2);
+  }
+  function countUp(el) {
+    var target = parseInt(el.getAttribute('data-count') || '0', 10);
+    var dur = 1600;
+    var t0 = performance.now();
+    function frame(t) {
+      var p = clamp((t - t0) / dur, 0, 1);
+      el.textContent = Math.round(easeOutQuintish(p) * target);
+      if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+  var statIo = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      var el = en.target;
+      if (RM) { el.textContent = el.getAttribute('data-count'); }
+      else { countUp(el); }
+      statIo.unobserve(el);
+    });
+  }, { threshold: 0.6 });
+  $$('.stat-num').forEach(function (el) { statIo.observe(el); });
+
+  /* ---- scroll work: progress, hero parallax, season parallax, look scrub ---- */
+  var prog = $('#prog');
+  var hero = $('#hero');
+  var stage = hero ? $('.hero-stage', hero) : null;
+  var wordmark = hero ? $('.wordmark', hero) : null;
+  var modelWrap = hero ? $('.hero-model-wrap', hero) : null;
+  var seasonMedia = $('.season-media');
+  var seasonImg = seasonMedia ? $('img', seasonMedia) : null;
+  var look = $('#look');
+
+  function update() {
+    var y = window.scrollY;
+    var doc = document.documentElement;
+    var max = doc.scrollHeight - window.innerHeight;
+    prog.style.transform = 'scaleX(' + (max > 0 ? clamp(y / max, 0, 1) : 0) + ')';
+    if (RM) return;
+
+    if (hero && wordmark && modelWrap && stage) {
+      var hf = clamp(1 - y / (window.innerHeight * 0.9), 0, 1);
+      stage.style.setProperty('--hf', hf.toFixed(3));
+      wordmark.style.transform = 'translateY(' + (y * 0.14) + 'px)';
+      modelWrap.style.transform = 'scale(' + (1 + y * 6e-7) + ') translateY(' + (-y * 0.06) + 'px)';
+    }
+    if (seasonMedia && seasonImg) {
+      var r = seasonMedia.getBoundingClientRect();
+      var off = r.top + r.height / 2 - window.innerHeight / 2;
+      var ty = clamp(off * -0.12, -80, 80);
+      seasonImg.style.transform = 'translateY(' + ty + 'px) scale(1.12)';
+    }
+    if (look) {
+      var r2 = look.getBoundingClientRect();
+      var p = clamp((window.innerHeight - r2.top) / (window.innerHeight + r2.height), 0, 1);
+      look.style.setProperty('--p', p.toFixed(4));
+    }
+  }
+
+  if (!RM) {
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () { update(); ticking = false; });
+    }, { passive: true });
+    update();
+  } else {
+    if (look) look.style.setProperty('--p', '1');
+    if (stage) stage.style.setProperty('--hf', '1');
+    prog.style.transform = 'scaleX(0)';
+  }
+
+  /* ---- signup ---- */
+  var form = $('#signupForm');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var email = $('#signupEmail').value.trim();
+      var err = $('#signupErr');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (err) {
+          err.hidden = false;
+          clearTimeout(form._t);
+          form._t = setTimeout(function () { err.hidden = true; }, 2600);
+        }
+        return;
+      }
+      if (err) err.hidden = true;
+      form.hidden = true;
+      var msg = $('#signupMsg');
+      if (msg) msg.hidden = false;
+    });
+  }
+})();
+</script>
+</body>
+</html>
